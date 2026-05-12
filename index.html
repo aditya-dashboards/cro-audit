@@ -227,77 +227,6 @@
       40% { transform: translateY(-6px); opacity: 1; }
     }
 
-    /* ── PROMPT EDITOR ── */
-    .prompt-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 18px;
-      font-size: 0.78rem;
-      font-family: monospace;
-      color: #888;
-      cursor: pointer;
-      user-select: none;
-      border: none;
-      background: none;
-      padding: 0;
-    }
-    .prompt-toggle:hover { color: #333; }
-    .prompt-toggle .arrow { transition: transform 0.2s; display: inline-block; }
-    .prompt-toggle.open .arrow { transform: rotate(90deg); }
-
-    .prompt-box {
-      display: none;
-      margin-top: 12px;
-    }
-    .prompt-box.open { display: block; }
-
-    .prompt-hint {
-      font-size: 0.72rem;
-      font-family: monospace;
-      color: #bbb;
-      margin-bottom: 6px;
-    }
-    .prompt-hint code {
-      background: #f0efe9;
-      padding: 1px 5px;
-      border-radius: 3px;
-      color: #888;
-    }
-
-    textarea#custom-prompt {
-      width: 100%;
-      min-height: 200px;
-      padding: 12px 14px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.82rem;
-      font-family: monospace;
-      color: #222;
-      background: #fafaf8;
-      resize: vertical;
-      line-height: 1.6;
-      outline: none;
-      transition: border 0.2s;
-    }
-    textarea#custom-prompt:focus { border-color: #111; background: #fff; }
-
-    .prompt-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .btn-ghost {
-      padding: 6px 14px;
-      font-size: 0.75rem;
-      font-family: monospace;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background: #fff;
-      color: #666;
-      cursor: pointer;
-    }
-    .btn-ghost:hover { border-color: #111; color: #111; }
 
     /* ── PDF styles ── */
     @media print {
@@ -308,8 +237,8 @@
 </head>
 <body>
 
-<h1>Find revenue leaks in your website</h1>
-<p class="subtitle">AI-powered CRO audit trained on winning conversion patterns, competitor insights, customer reviews, and reddit conversations with actionable fixes you can test immediately.</p>
+<h1>Find revenue leaks from your website conversion</h1>
+<p class="subtitle">AI-powered CRO audits trained on winning conversion patterns, competitor insights, customer reviews, and reddit conversations with actionable fixes you can test immediately.</p>
 
 <div class="wrapper">
 
@@ -334,21 +263,7 @@
         <input type="number" id="aov" placeholder="e.g. 85" min="1" />
       </div>
     </div>
-    <!-- PROMPT EDITOR -->
-    <button class="prompt-toggle" id="prompt-toggle" onclick="togglePrompt()">
-      <span class="arrow">▶</span> Customise AI Prompt
-    </button>
-    <div class="prompt-box" id="prompt-box">
-      <p class="prompt-hint">
-        Edit the prompt Claude receives. Use <code>{{url}}</code> <code>{{visitors}}</code> <code>{{cvr}}</code> <code>{{aov}}</code> <code>{{monthlyRev}}</code> <code>{{orders}}</code> <code>{{lift1pct}}</code> as placeholders — they get replaced with real values automatically.
-      </p>
-      <textarea id="custom-prompt"></textarea>
-      <div class="prompt-actions">
-        <button class="btn-ghost" onclick="resetPrompt()">&#8635; Reset to Default</button>
-      </div>
-    </div>
-
-    <button class="btn-run" id="run-btn" onclick="generateReport()">Generate Report →</button>
+    <button class="btn-run" id="run-btn" onclick="generateReport()">Generate Audit →</button>
   </div>
 
   <!-- OUTPUT CONTAINER -->
@@ -369,8 +284,7 @@
   // ─────────────────────────────────────────────
 
   // ─────────────────────────────────────────────
-  // ✏️  DEFAULT PROMPT — edit freely in the UI
-  //     or change the text below directly.
+  // ✏️  DEFAULT PROMPT
   //
   //     Placeholders auto-filled at runtime:
   //       {{url}}        → website URL
@@ -651,22 +565,6 @@ Do:
 - prioritize clarity and actionability
 - Keep the tone sharp, data-driven, and consultative. Do not use markdown. Output raw HTML only.`;
 
-  // Populate textarea on load
-  window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('custom-prompt').value = DEFAULT_PROMPT;
-  });
-
-  function togglePrompt() {
-    const toggle = document.getElementById('prompt-toggle');
-    const box    = document.getElementById('prompt-box');
-    toggle.classList.toggle('open');
-    box.classList.toggle('open');
-  }
-
-  function resetPrompt() {
-    document.getElementById('custom-prompt').value = DEFAULT_PROMPT;
-  }
-
   async function generateReport() {
     const url      = document.getElementById('url').value.trim();
     const visitors = document.getElementById('visitors').value.trim();
@@ -697,8 +595,8 @@ Do:
     const orders     = Math.round(visitors * cvr / 100);
     const lift1pct   = (visitors * ((parseFloat(cvr)+1)/100) * aov).toLocaleString('en-US', {style:'currency', currency:'USD', maximumFractionDigits:0});
 
-    // Fill placeholders in whatever prompt the user has written
-    const rawPrompt = document.getElementById('custom-prompt').value;
+    // Fill placeholders in the default prompt
+    const rawPrompt = DEFAULT_PROMPT;
     const prompt = rawPrompt
       .replace(/{{url}}/g,        url)
       .replace(/{{visitors}}/g,   visitors)
@@ -744,7 +642,7 @@ Do:
     }
 
     btn.disabled = false;
-    btn.textContent = 'Regenerate Report →';
+    btn.textContent = 'Regenerate Audit →';
   }
 
   function exportPDF() {
